@@ -102,6 +102,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      case_notes: {
+        Row: {
+          author_name: string;
+          case_id: string;
+          created_at: string;
+          id: string;
+          note: string;
+        };
+        Insert: {
+          author_name?: string;
+          case_id: string;
+          created_at?: string;
+          id?: string;
+          note: string;
+        };
+        Update: {
+          author_name?: string;
+          case_id?: string;
+          created_at?: string;
+          id?: string;
+          note?: string;
+        };
+        Relationships: [];
+      };
       fraud_alerts: {
         Row: {
           acknowledged_at: string | null;
@@ -183,6 +207,42 @@ export type Database = {
           rule_type?: string;
           severity?: string;
           threshold_value?: number | null;
+        };
+        Relationships: [];
+      };
+      investigation_cases: {
+        Row: {
+          alert_id: string;
+          created_at: string;
+          id: string;
+          owner_name: string;
+          priority: string;
+          status: string;
+          summary: string | null;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          alert_id: string;
+          created_at?: string;
+          id?: string;
+          owner_name?: string;
+          priority?: string;
+          status?: string;
+          summary?: string | null;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          alert_id?: string;
+          created_at?: string;
+          id?: string;
+          owner_name?: string;
+          priority?: string;
+          status?: string;
+          summary?: string | null;
+          title?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

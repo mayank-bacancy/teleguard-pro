@@ -6,7 +6,8 @@ type ControlShellNavProps = {
     | "alerts"
     | "blocked-numbers"
     | "rules"
-    | "analytics";
+    | "analytics"
+    | "cases";
 };
 
 const items = [
@@ -15,6 +16,7 @@ const items = [
   { key: "blocked-numbers", href: "/blocked-numbers", label: "Blocked Numbers" },
   { key: "rules", href: "/rules", label: "Rules" },
   { key: "analytics", href: "/analytics", label: "Analytics" },
+  { key: "cases", href: "/cases", label: "Cases" },
 ] as const;
 
 export function ControlShellNav({ current }: ControlShellNavProps) {

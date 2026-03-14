@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { formatDistanceToNowStrict } from "date-fns";
 
 import { AlertBadge } from "@/components/alerts/alert-badge";
+import { CaseCreateButton } from "@/components/cases/case-create-button";
 import { AlertStatusForm } from "@/components/alerts/alert-status-form";
 import { ControlShellNav } from "@/components/control-center/control-shell-nav";
 import { createClient } from "@/lib/supabase/server";
 import { getAlertInvestigation } from "@/services/alerts";
+import { getCaseByAlertId } from "@/services/cases";
 
 type AlertDetailPageProps = {
   params: Promise<{
@@ -19,7 +21,10 @@ export default async function AlertDetailPage({
 }: AlertDetailPageProps) {
   const { id } = await params;
   const supabase = await createClient();
-  const investigation = await getAlertInvestigation(supabase, id);
+  const [investigation, existingCase] = await Promise.all([
+    getAlertInvestigation(supabase, id),
+    getCaseByAlertId(supabase, id),
+  ]);
 
   if (!investigation) {
     notFound();
@@ -138,6 +143,25 @@ export default async function AlertDetailPage({
 
           <div className="grid gap-6">
             <AlertStatusForm alertId={alert.id} currentStatus={alert.status} />
+
+            {existingCase ? (
+              <section className="rounded-[24px] border border-white/10 bg-black/10 p-5">
+                <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
+                  Case management
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">
+                  This alert is already linked to an active investigation case.
+                </p>
+                <Link
+                  href={`/cases/${existingCase.id}`}
+                  className="mt-4 inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-4 py-3 text-sm font-medium text-cyan-100 transition hover:bg-cyan-300/18"
+                >
+                  Open Linked Case
+                </Link>
+              </section>
+            ) : (
+              <CaseCreateButton alertId={alert.id} />
+            )}
 
             <SectionCard
               eyebrow="Containment"
