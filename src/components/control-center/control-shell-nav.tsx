@@ -10,7 +10,8 @@ type ControlShellNavProps = {
     | "cases"
     | "network-security"
     | "ingestion"
-    | "revenue-assurance";
+    | "revenue-assurance"
+    | "signaling-security";
 };
 
 const items = [
@@ -23,6 +24,7 @@ const items = [
   { key: "network-security", href: "/network-security", label: "Network Security" },
   { key: "ingestion", href: "/ingestion", label: "Ingestion" },
   { key: "revenue-assurance", href: "/revenue-assurance", label: "Revenue Assurance" },
+  { key: "signaling-security", href: "/signaling-security", label: "Signaling Security" },
 ] as const;
 
 export function ControlShellNav({ current }: ControlShellNavProps) {
