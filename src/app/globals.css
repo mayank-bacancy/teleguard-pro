@@ -3,13 +3,17 @@
 :root {
   --background: #05080b;
   --foreground: #f4f8fb;
+  --font-display-stack: "Rajdhani", "Avenir Next Condensed", "Trebuchet MS",
+    sans-serif;
+  --font-mono-stack: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular",
+    "Consolas", monospace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Segoe UI", "Helvetica Neue", sans-serif;
-  --font-mono: "SFMono-Regular", "Consolas", monospace;
+  --font-sans: var(--font-display-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +27,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.25);
 }
