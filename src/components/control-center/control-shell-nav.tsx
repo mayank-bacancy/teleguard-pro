@@ -11,11 +11,12 @@ type ControlShellNavProps = {
     | "network-security"
     | "ingestion"
     | "revenue-assurance"
-    | "signaling-security";
+    | "signaling-security"
+    | "reports";
 };
 
 const items = [
-  { key: "dashboard", href: "/", label: "Dashboard" },
+  { key: "dashboard", href: "/dashboard", label: "Dashboard" },
   { key: "alerts", href: "/alerts", label: "Alerts" },
   { key: "blocked-numbers", href: "/blocked-numbers", label: "Blocked Numbers" },
   { key: "rules", href: "/rules", label: "Rules" },
@@ -25,6 +26,7 @@ const items = [
   { key: "ingestion", href: "/ingestion", label: "Ingestion" },
   { key: "revenue-assurance", href: "/revenue-assurance", label: "Revenue Assurance" },
   { key: "signaling-security", href: "/signaling-security", label: "Signaling Security" },
+  { key: "reports", href: "/reports", label: "Reports" },
 ] as const;
 
 export function ControlShellNav({ current }: ControlShellNavProps) {
@@ -47,6 +49,12 @@ export function ControlShellNav({ current }: ControlShellNavProps) {
           </Link>
         );
       })}
+      <Link
+        href="/logout"
+        className="inline-flex rounded-full border border-rose-300/20 bg-rose-300/10 px-4 py-2 text-sm text-rose-100 transition hover:bg-rose-300/18"
+      >
+        Logout
+      </Link>
     </nav>
   );
 }

@@ -4,7 +4,7 @@ import { getSupabaseUrl } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
 
 export function createAdminClient() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceRoleKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!serviceRoleKey) {
     throw new Error("Missing Supabase admin environment variables.");

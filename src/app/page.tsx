@@ -1,292 +1,216 @@
-import { formatDistanceToNowStrict } from "date-fns";
+import Link from "next/link";
 
-import { DashboardStatCard } from "@/components/dashboard-stat-card";
-import { ControlShellNav } from "@/components/control-center/control-shell-nav";
-import { RealtimeControl } from "@/components/realtime/realtime-control";
-import { WorkflowTrigger } from "@/components/workflow-trigger";
-import { createClient } from "@/lib/supabase/server";
-import { getDashboardSnapshot } from "@/services/fraud-workflow";
+import { MarketingCardGrid } from "@/components/marketing/marketing-card-grid";
+import {
+  serviceCards,
+  solutionCards,
+} from "@/components/marketing/marketing-data";
+import { MarketingSectionIntro } from "@/components/marketing/marketing-section-intro";
+import { MarketingShell } from "@/components/marketing/marketing-shell";
 
-export default async function Home() {
-  const supabase = await createClient();
-  const dashboard = await getDashboardSnapshot(supabase);
+const metrics = [
+  { label: "Workflow", value: "Detection to response" },
+  { label: "Coverage", value: "Fraud, signaling, revenue" },
+  { label: "Audience", value: "Operators and risk teams" },
+];
 
+export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#17324a_0%,#08131b_38%,#04070a_100%)] px-5 py-8 text-slate-100 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
-        <section className="overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(140deg,rgba(15,31,45,0.94)_0%,rgba(6,12,16,0.9)_45%,rgba(4,8,10,0.98)_100%)] p-6 shadow-[0_40px_140px_-55px_rgba(7,20,28,0.95)] sm:p-8 lg:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr]">
-            <div>
-              <div className="inline-flex rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-cyan-100/80">
-                TeleGuard Pro
-              </div>
-              <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Telecom fraud operations with seeded risk telemetry and live
-                response controls.
+    <MarketingShell>
+      <main>
+        <section className="marketing-grid overflow-hidden px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="fade-in-up">
+              <span className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-cyan-100 shadow-sm">
+                Telecom Fraud Defense Platform
+              </span>
+              <h1 className="mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+                Detect, investigate, and shut down telecom fraud before it
+                becomes revenue loss.
               </h1>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                The dashboard is now wired to Supabase. It surfaces live counts
-                from your seeded call records, fraud rules, alerts, and active
-                blocks, then lets you trigger the first alert-generation cycle
-                directly from the app.
+              <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+                TeleGuard Pro helps telecom operators and risk teams monitor
+                suspicious activity, investigate incidents, contain threats, and
+                explain business impact clearly.
               </p>
-            </div>
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 backdrop-blur">
-              <div className="mb-5">
-                <ControlShellNav current="dashboard" />
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="/signup"
+                  className="rounded-full bg-teal-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-teal-400"
+                >
+                  Start with TeleGuard
+                </Link>
+                <Link
+                  href="/contact-us"
+                  className="rounded-full border border-white/12 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/10"
+                >
+                  Request a walkthrough
+                </Link>
               </div>
-              <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">
-                System posture
-              </p>
-              <div className="mt-5 grid gap-4">
-                <SignalRow
-                  label="Fraud rules active"
-                  value={String(dashboard.activeRules.length)}
-                />
-                <SignalRow
-                  label="High-risk calls queued"
-                  value={String(dashboard.counts.suspiciousCalls)}
-                />
-                <SignalRow
-                  label="Open response surface"
-                  value={String(dashboard.counts.alerts)}
-                />
-              </div>
-              <p className="mt-6 text-sm leading-6 text-slate-300">
-                Recommended next move: run the workflow once after every seed
-                refresh so `fraud_alerts` and `blocked_numbers` stay aligned
-                with suspicious CDR activity.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <DashboardStatCard
-              eyebrow="Traffic"
-              title="Total Call Records"
-              value={compactNumber(dashboard.counts.totalCalls)}
-              tone="cyan"
-            />
-            <DashboardStatCard
-              eyebrow="Risk"
-              title="Suspicious Calls"
-              value={compactNumber(dashboard.counts.suspiciousCalls)}
-              tone="amber"
-            />
-            <DashboardStatCard
-              eyebrow="Response"
-              title="Fraud Alerts"
-              value={compactNumber(dashboard.counts.alerts)}
-              tone="red"
-            />
-            <DashboardStatCard
-              eyebrow="Containment"
-              title="Blocked Numbers"
-              value={compactNumber(dashboard.counts.blockedNumbers)}
-              tone="emerald"
-            />
-          </div>
-        </section>
-
-        <section className="mt-6">
-          <RealtimeControl surface="dashboard" />
-        </section>
-
-        <section className="mt-6">
-          <WorkflowTrigger />
-        </section>
-
-        <section className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[32px] border border-white/10 bg-white/[0.035] p-6 backdrop-blur">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">
-                  Inbound risk stream
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-white">
-                  Recent call detail records
-                </h2>
-              </div>
-              <p className="text-sm text-slate-400">
-                Latest 8 rows from `call_detail_records`
-              </p>
-            </div>
-
-            <div className="mt-6 overflow-hidden rounded-[24px] border border-white/10">
-              <div className="grid grid-cols-[1.25fr_1fr_1fr_0.8fr_0.7fr] gap-3 border-b border-white/10 bg-white/[0.04] px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-slate-400">
-                <span>Source</span>
-                <span>Route</span>
-                <span>Status</span>
-                <span>Risk</span>
-                <span>Age</span>
-              </div>
-              <div className="divide-y divide-white/8">
-                {dashboard.recentCalls.map((call) => (
+              <div className="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+                {metrics.map((metric) => (
                   <div
-                    key={call.id}
-                    className="grid grid-cols-[1.25fr_1fr_1fr_0.8fr_0.7fr] gap-3 px-4 py-4 text-sm"
+                    key={metric.label}
+                    className="rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-[0_30px_90px_-55px_rgba(2,6,23,0.65)] backdrop-blur"
                   >
-                    <div>
-                      <p className="font-medium text-white">
-                        {call.caller_number}
-                      </p>
-                      <p className="mt-1 text-xs text-slate-400">
-                        to {call.receiver_number}
-                      </p>
-                    </div>
-                    <div className="text-slate-300">
-                      {call.source_country} to {call.destination_country}
-                    </div>
-                    <div className="flex items-center">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${getCallTone(call)}`}
-                      >
-                        {call.is_suspicious ? "Suspicious" : "Normal"}
-                      </span>
-                    </div>
-                    <div className="text-white">{Math.round(call.risk_score)}</div>
-                    <div className="text-slate-400">
-                      {formatAge(call.call_start)}
-                    </div>
+                    <p className="text-lg font-semibold text-white">
+                      {metric.value}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                      {metric.label}
+                    </p>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
 
-          <div className="grid gap-6">
-            <div className="rounded-[32px] border border-white/10 bg-white/[0.035] p-6 backdrop-blur">
-              <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">
-                Alert queue
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
-                Recent fraud alerts
-              </h2>
-              <div className="mt-5 space-y-3">
-                {dashboard.recentAlerts.length === 0 ? (
-                  <EmptyStateCopy text="No alerts yet. Run the workflow to convert suspicious CDRs into active incidents." />
-                ) : (
-                  dashboard.recentAlerts.map((alert) => (
-                    <article
-                      key={alert.id}
-                      className="rounded-[24px] border border-white/10 bg-black/10 p-4"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-medium text-white">{alert.title}</h3>
-                          <p className="mt-1 text-sm text-slate-400">
-                            {alert.sourceNumber}
-                          </p>
-                        </div>
-                        <span
-                          className={`rounded-full px-2.5 py-1 text-[11px] uppercase tracking-[0.2em] ${getSeverityTone(alert.severity)}`}
-                        >
-                          {alert.severity}
-                        </span>
-                      </div>
-                      <p className="mt-3 text-sm leading-6 text-slate-300">
-                        {alert.reason}
-                      </p>
-                      <div className="mt-4 flex items-center justify-between text-xs text-slate-400">
-                        <span>{alert.status}</span>
-                        <span>{formatAge(alert.createdAt)}</span>
-                      </div>
-                    </article>
-                  ))
-                )}
-              </div>
-            </div>
+            <div className="fade-in-up-delay relative">
+              <div className="float-slow absolute -left-4 top-8 h-28 w-28 rounded-full bg-cyan-400/15 blur-3xl" />
+              <div className="absolute -right-6 top-24 h-36 w-36 rounded-full bg-orange-400/12 blur-3xl" />
+              <div className="relative space-y-4 rounded-[34px] border border-cyan-300/12 bg-[linear-gradient(160deg,rgba(15,31,45,0.98),rgba(6,12,16,0.96))] p-6 text-white shadow-[0_45px_140px_-60px_rgba(15,23,42,0.92)]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">
+                      Why teams use it
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold">
+                      Built for telecom risk operations
+                    </h2>
+                  </div>
+                  <div className="pulse-ring rounded-full border border-emerald-300/30 bg-emerald-300/15 px-4 py-2 text-xs uppercase tracking-[0.26em] text-emerald-100">
+                    Ready
+                  </div>
+                </div>
 
-            <div className="rounded-[32px] border border-white/10 bg-white/[0.035] p-6 backdrop-blur">
-              <p className="text-[11px] uppercase tracking-[0.28em] text-cyan-200/80">
-                Rules engine
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
-                Active fraud rules
-              </h2>
-              <div className="mt-5 space-y-3">
-                {dashboard.activeRules.map((rule) => (
-                  <article
-                    key={rule.id}
-                    className="rounded-[24px] border border-white/10 bg-black/10 p-4"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="font-medium text-white">{rule.name}</h3>
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[11px] uppercase tracking-[0.2em] ${getSeverityTone(rule.severity)}`}
-                      >
-                        {rule.severity}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between text-sm text-slate-400">
-                      <span>{rule.ruleType}</span>
-                      <span>
-                        Threshold:{" "}
-                        {rule.thresholdValue === null ? "N/A" : rule.thresholdValue}
-                      </span>
-                    </div>
-                  </article>
-                ))}
+                <div className="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">
+                    Who it is for
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">
+                    Telecom operators, fraud teams, network risk teams, and
+                    revenue assurance leaders.
+                  </p>
+                </div>
+                <div className="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">
+                    What it solves
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">
+                    Monitoring, investigations, containment, network
+                    intelligence, and reporting in one clear operating model.
+                  </p>
+                </div>
+                <div className="rounded-[26px] border border-white/10 bg-white/6 p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-cyan-200/75">
+                    What customers get
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">
+                    Cleaner workflows for suspicious traffic, analyst cases,
+                    reporting, and revenue-risk visibility.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
-      </div>
-    </main>
+
+        <section className="px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <MarketingSectionIntro
+              eyebrow="Solutions"
+              title="Core product solutions"
+              description="A focused product surface for telecom fraud detection, investigation, signaling visibility, and revenue protection."
+            />
+            <div className="mt-8">
+              <MarketingCardGrid items={solutionCards.slice(0, 3)} />
+            </div>
+            <div className="mt-7">
+              <Link
+                href="/solutions"
+                className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/8"
+              >
+                View all solutions
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl rounded-[36px] border border-white/10 bg-[linear-gradient(140deg,rgba(15,31,45,0.94)_0%,rgba(6,12,16,0.9)_45%,rgba(4,8,10,0.98)_100%)] px-8 py-10 text-white shadow-[0_40px_120px_-60px_rgba(15,23,42,0.9)]">
+            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <MarketingSectionIntro
+                  eyebrow="Services"
+                  title="Support beyond monitoring"
+                  description="Services around fraud detection, telecom visibility, reporting, and revenue-risk communication so teams can work faster and leadership can see what is protected."
+                />
+                <div className="mt-7">
+                  <Link
+                    href="/services"
+                    className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+                  >
+                    Explore services
+                  </Link>
+                </div>
+              </div>
+              <MarketingCardGrid items={serviceCards} tone="muted" />
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_1fr]">
+            <article className="rounded-[34px] border border-white/10 bg-white/[0.04] p-8">
+              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/70">
+                About us
+              </span>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white">
+                Telecom-first product thinking.
+              </h2>
+              <p className="mt-4 text-base leading-7 text-slate-300">
+                TeleGuard Pro is positioned for fraud teams, network defenders,
+                revenue assurance leaders, and security operations groups that
+                need one narrative from suspicious traffic to executive reporting.
+              </p>
+              <div className="mt-7">
+                <Link
+                  href="/about-us"
+                  className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/8"
+                >
+                  Learn more
+                </Link>
+              </div>
+            </article>
+
+            <article className="rounded-[34px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(15,31,45,0.98),rgba(7,20,28,0.94))] p-8">
+              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-teal-300">
+                Contact us
+              </span>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white">
+                Ready for a product conversation?
+              </h2>
+              <p className="mt-4 max-w-xl text-base leading-7 text-slate-300">
+                Start with contact, signup, or login. The next auth step will
+                connect public entry points to the secured operator workspace.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-4">
+                <Link
+                  href="/contact-us"
+                  className="rounded-full bg-teal-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-teal-400"
+                >
+                  Contact us
+                </Link>
+                <Link
+                  href="/login"
+                  className="rounded-full border border-white/12 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/8"
+                >
+                  Login
+                </Link>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </MarketingShell>
   );
-}
-
-function SignalRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/10 px-4 py-3">
-      <span className="text-sm text-slate-300">{label}</span>
-      <span className="text-lg font-semibold text-white">{value}</span>
-    </div>
-  );
-}
-
-function EmptyStateCopy({ text }: { text: string }) {
-  return (
-    <div className="rounded-[24px] border border-dashed border-white/10 bg-black/10 p-5 text-sm leading-6 text-slate-400">
-      {text}
-    </div>
-  );
-}
-
-function compactNumber(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
-}
-
-function formatAge(timestamp: string) {
-  return formatDistanceToNowStrict(new Date(timestamp), {
-    addSuffix: true,
-  });
-}
-
-function getCallTone(call: { is_suspicious: boolean; risk_score: number }) {
-  if (call.risk_score >= 90) {
-    return "bg-rose-400/12 text-rose-200";
-  }
-
-  if (call.is_suspicious) {
-    return "bg-amber-400/12 text-amber-200";
-  }
-
-  return "bg-emerald-400/12 text-emerald-200";
-}
-
-function getSeverityTone(severity: string) {
-  switch (severity) {
-    case "critical":
-      return "bg-rose-400/14 text-rose-200";
-    case "high":
-      return "bg-amber-400/14 text-amber-200";
-    case "medium":
-      return "bg-cyan-400/14 text-cyan-200";
-    default:
-      return "bg-slate-400/14 text-slate-200";
-  }
 }

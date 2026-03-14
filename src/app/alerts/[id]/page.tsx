@@ -57,7 +57,7 @@ export default async function AlertDetailPage({
               Back to alerts
             </Link>
             <Link
-              href="/"
+              href="/dashboard"
               className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-300/18"
             >
               Dashboard
