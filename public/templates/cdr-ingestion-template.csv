@@ -1,0 +1,6 @@
+caller_number,receiver_number,call_start,call_end,duration_seconds,call_type,source_country,destination_country,source_network,destination_network,cost,status,risk_score,is_suspicious
++12025550111,+442071838750,2026-03-14T10:15:00.000Z,2026-03-14T10:19:00.000Z,240,voice,United States,United Kingdom,AT&T,Vodafone UK,4.25,completed,28,false
++919876543210,+919812345678,2026-03-14T11:05:00.000Z,2026-03-14T11:08:00.000Z,180,voice,India,India,Airtel,Jio,1.80,completed,12,false
++12025550001,+12025551011,2026-03-14T11:35:00.000Z,2026-03-14T11:35:22.000Z,22,voice,United States,United States,AT&T,AT&T,0.15,completed,86,true
++2348012345678,+493012345600,2026-03-14T11:42:00.000Z,2026-03-14T11:45:00.000Z,180,voice,Nigeria,Germany,MTN,Telekom,5.20,completed,89,true
++8801712345678,+971501234567,2026-03-14T11:50:00.000Z,2026-03-14T12:22:00.000Z,1920,voice,Bangladesh,United Arab Emirates,Grameenphone,Etisalat,18.25,completed,93,true
